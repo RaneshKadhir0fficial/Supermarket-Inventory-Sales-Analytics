@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SuperStock · Analytics Pro</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+    </script>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <span class="logo-icon">📊</span>
+            <div>
+                <span class="logo-title">SuperStock</span>
+                <span class="logo-sub">ANALYTICS PRO</span>
+            </div>
+        </div>
+        <nav class="nav-menu">
+            <a href="#" class="nav-item active" data-page="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            <a href="#" class="nav-item" data-page="products"><i class="fas fa-cubes"></i> Products</a>
+            <a href="#" class="nav-item" data-page="inventory"><i class="fas fa-warehouse"></i> Inventory</a>
+            <a href="#" class="nav-item" data-page="sales"><i class="fas fa-coins"></i> Sales</a>
+            <a href="#" class="nav-item" data-page="suppliers"><i class="fas fa-truck"></i> Suppliers</a>
+            <a href="#" class="nav-item" data-page="reorder"><i class="fas fa-bell"></i> Reorder Alerts</a>
+            <a href="#" class="nav-item" data-page="reports"><i class="fas fa-file-alt"></i> Reports</a>
+            <a href="#" class="nav-item" data-page="settings"><i class="fas fa-cog"></i> Settings</a>
+        </nav>
+        <div class="sidebar-footer">
+            <span class="status-badge healthy"><i class="fas fa-circle"></i> SETTING HEALTHY</span>
+            <span class="status-badge api"><i class="fas fa-link"></i> API CONNECTED</span>
+            <span class="status-badge ready"><i class="fas fa-check"></i> 2024 READY</span>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+        <!-- ===== PAGE: DASHBOARD ===== -->
+        <section id="page-dashboard" class="page active">
+            <header class="page-header">
+                <h1>Strategic Overview</h1>
+                <p>Real-time performance analytics for your supermarket operations.</p>
+            </header>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label"><i class="fas fa-dollar-sign"></i> TOTAL SALES REVENUE</div>
+                    <div class="kpi-value" id="totalRevenue">$251.10</div>
+                    <div class="kpi-sub">Total revenue generated this month</div>
+                </div>
+                <div class="kpi-card warning">
+                    <div class="kpi-label"><i class="fas fa-exclamation-triangle"></i> LOW STOCK ITEMS</div>
+                    <div class="kpi-value" id="lowStockCount">4</div>
+                    <div class="kpi-sub">Products requiring immediate attention</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label"><i class="fas fa-sync-alt"></i> INVENTORY TURNOVER</div>
+                    <div class="kpi-value" id="inventoryTurnover">4.2</div>
+                    <div class="kpi-sub">Average product movement frequency</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label"><i class="fas fa-box"></i> TOTAL PRODUCTS</div>
+                    <div class="kpi-value" id="totalProducts">10</div>
+                    <div class="kpi-sub">Registered items in catalog</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="chart-card">
+                    <h3>Sales Performance</h3>
+                    <p class="chart-sub">Daily revenue trends and transaction volume</p>
+                    <canvas id="salesChart" height="180"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Inventory Value Distribution</h3>
+                    <p class="chart-sub">Total asset value by product category</p>
+                    <canvas id="categoryChart" height="180"></canvas>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="chart-card">
+                    <h3>Fast-Moving Products</h3>
+                    <p class="chart-sub">Top 5 products by sales volume</p>
+                    <ul class="fast-movers" id="fastMovers">
+                        <li>Bottled Water 500ml</li>
+                        <li>Fresh Apples 1kg</li>
+                        <li>Canned Tomatoes 400g</li>
+                        <li>Whole Grain Bread</li>
+                        <li>Organic Milk 1L</li>
+                    </ul>
+                </div>
+                <div class="chart-card alert-card">
+                    <h3>Reorder Alert Summary</h3>
+                    <p class="chart-sub">Urgent stock replacement needed</p>
+                    <ul class="alert-list" id="alertList">
+                        <li><span class="alert-dot danger"></span> Organic Milk 1L: 12 left</li>
+                        <li><span class="alert-dot warning"></span> Bottled Water 5L: 85 left</li>
+                        <li><span class="alert-dot danger"></span> Canned Tomatoes: 10 left</li>
+                        <li><span class="alert-dot danger"></span> Eggs (dozen): 5 left</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PAGE: PRODUCTS ===== -->
+        <section id="page-products" class="page">
+            <header class="page-header">
+                <h1>Product Catalog</h1>
+                <p>Manage your supermarket inventory items and details.</p>
+                <div class="header-actions">
+                    <button class="btn-primary" id="addProductBtn"><i class="fas fa-plus"></i> Add Product</button>
+                </div>
+            </header>
+            <div class="toolbar">
+                <input type="text" class="search-input" id="productSearch" placeholder="Search by name or SKU." />
+                <select class="filter-select" id="categoryFilter">
+                    <option value="all">All Categories</option>
+                    <option value="Bakery">Bakery</option>
+                    <option value="Dairy">Dairy</option>
+                    <option value="Produce">Produce</option>
+                    <option value="Beverages">Beverages</option>
+                    <option value="Pantry">Pantry</option>
+                </select>
+            </div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Supplier</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                        <!-- rendered by JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <span id="productCount">Showing 10 of 10 products</span>
+                <span class="pagination"><span class="active">1</span> <span>Next</span></span>
+            </div>
+        </section>
+
+        <!-- ===== PAGE: INVENTORY ===== -->
+        <section id="page-inventory" class="page">
+            <header class="page-header">
+                <h1>Inventory Management</h1>
+                <p>Real-time stock level monitoring and adjustments.</p>
+                <div class="header-actions">
+                    <button class="btn-outline"><i class="fas fa-history"></i> View Logs</button>
+                    <button class="btn-outline"><i class="fas fa-sync"></i> Sync Records</button>
+                </div>
+            </header>
+            <div class="status-tabs">
+                <button class="status-tab active" data-status="all">All</button>
+                <button class="status-tab" data-status="healthy">Healthy</button>
+                <button class="status-tab" data-status="low">Low Stock</button>
+                <button class="status-tab" data-status="out">Out of Stock</button>
+            </div>
+            <div class="toolbar">
+                <input type="text" class="search-input" id="inventorySearch" placeholder="Filter inventory..." />
+            </div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Current Stock</th>
+                            <th>Status</th>
+                            <th>Last Activity</th>
+                            <th>Manage Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTableBody">
+                        <!-- rendered by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ===== PAGE: SALES ===== -->
+        <section id="page-sales" class="page">
+            <header class="page-header">
+                <h1>Sales Analytics</h1>
+                <p>Monitor daily transactions and revenue performance.</p>
+                <div class="header-actions">
+                    <button class="btn-outline"><i class="fas fa-upload"></i> Bulk Upload</button>
+                    <button class="btn-primary" id="newSaleBtn"><i class="fas fa-plus"></i> New Sale</button>
+                </div>
+            </header>
+            <div class="sales-kpi">
+                <div class="sales-kpi-item"><span class="label">AVERAGE ORDER</span><span class="value" id="avgOrder">$18.42</span></div>
+                <div class="sales-kpi-item"><span class="label">SALES TODAY</span><span class="value" id="salesToday">24</span></div>
+                <div class="sales-kpi-item"><span class="label">BEST DAY</span><span class="value" id="bestDay">Friday</span></div>
+                <div class="sales-kpi-item"><span class="label">GROWTH RATE</span><span class="value" id="growthRate">+14.2%</span></div>
+            </div>
+            <div class="toolbar">
+                <input type="text" class="search-input" id="salesSearch" placeholder="Search sales by product..." />
+                <select class="filter-select" id="salesPeriod">
+                    <option value="alltime">All Time</option>
+                    <option value="month">This Month</option>
+                    <option value="week">This Week</option>
+                </select>
+            </div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salesTableBody">
+                        <!-- rendered by JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <span id="salesTotalUnits">Total Sales Volume: 147 units</span>
+                <span class="pagination"><span class="active">1</span> <span>of 1</span></span>
+            </div>
+        </section>
+
+        <!-- ===== PAGE: SUPPLIERS ===== -->
+        <section id="page-suppliers" class="page">
+            <header class="page-header">
+                <h1>Supplier Management</h1>
+                <p>Evaluate reliability and lead times across all partners.</p>
+            </header>
+            <div class="supplier-grid">
+                <div class="supplier-chart-card">
+                    <h3>Performance Analysis</h3>
+                    <p class="chart-sub">Order fill rate percentage by supplier</p>
+                    <canvas id="supplierChart" height="150"></canvas>
+                </div>
+                <div class="supplier-stats">
+                    <div class="stat-box"><span class="stat-label">AVERAGE FILL RATE</span><span class="stat-value" id="avgFillRate">95.3%</span></div>
+                    <div class="stat-box"><span class="stat-label">AVERAGE LEAD TIME</span><span class="stat-value" id="avgLeadTime">2.8 Days</span></div>
+                </div>
+            </div>
+            <div class="lead-time-section">
+                <h3>Lead Time Comparison</h3>
+                <p class="chart-sub">Days from order to delivery</p>
+                <div class="lead-time-bars" id="leadTimeBars">
+                    <!-- rendered by JS -->
+                </div>
+            </div>
+            <div class="partner-grid" id="partnerGrid">
+                <!-- rendered by JS -->
+            </div>
+        </section>
+
+        <!-- ===== PAGE: REORDER ===== -->
+        <section id="page-reorder" class="page">
+            <header class="page-header">
+                <h1>Reorder Management</h1>
+                <p>Automated inventory replenishment alerts and tracking.</p>
+            </header>
+            <div class="reorder-list" id="reorderList">
+                <!-- rendered by JS -->
+            </div>
+            <div class="reorder-footer">
+                <div class="in-transit">
+                    <span><i class="fas fa-truck"></i> In Transit</span>
+                    <button class="btn-outline small">History</button>
+                </div>
+                <div class="history-empty">
+                    <i class="fas fa-clock"></i> History is empty<br />
+                    <span class="sub">Completed orders will appear here.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PAGE: REPORTS ===== -->
+        <section id="page-reports" class="page">
+            <header class="page-header">
+                <h1>Analytics Reports</h1>
+                <p>Generate and export comprehensive business intelligence reports.</p>
+                <div class="header-actions">
+                    <button class="btn-outline"><i class="fas fa-print"></i> Print PDF</button>
+                    <button class="btn-outline"><i class="fas fa-file-export"></i> Export CSV</button>
+                </div>
+            </header>
+            <div class="reports-kpi">
+                <div class="report-kpi-item"><span class="label">MONTHLY REVENUE</span><span class="value" id="rMonthlyRevenue">$251.10</span></div>
+                <div class="report-kpi-item"><span class="label">INVENTORY VALUE</span><span class="value" id="rInventoryValue">$1,197.90</span></div>
+                <div class="report-kpi-item"><span class="label">AVG. ORDER VALUE</span><span class="value" id="rAvgOrder">$20.93</span></div>
+                <div class="report-kpi-item"><span class="label">UNITS SOLD</span><span class="value" id="rUnitsSold">147</span></div>
+            </div>
+            <div class="report-grid">
+                <div class="report-card">
+                    <h3>Top Selling Products</h3>
+                    <p class="chart-sub">Performance of individual catalog items</p>
+                    <table class="report-table">
+                        <thead><tr><th>Product</th><th>Units Sold</th><th>Revenue</th></tr></thead>
+                        <tbody id="topSellingBody"></tbody>
+                    </table>
+                </div>
+                <div class="report-card">
+                    <h3>Supplier Reliability</h3>
+                    <p class="chart-sub">Operational efficiency of supply chain partners</p>
+                    <table class="report-table">
+                        <thead><tr><th>Supplier</th><th>Fill Rate</th><th>Status</th></tr></thead>
+                        <tbody id="supplierReliabilityBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="report-card risk-card">
+                <h3>Risk Management Report</h3>
+                <p class="chart-sub">Critical inventory items below safety stock threshold</p>
+                <div class="risk-tags" id="riskTags">
+                    <span class="risk-tag">Organic Milk 1L</span>
+                    <span class="risk-tag">Bottled Water 500ml</span>
+                    <span class="risk-tag">Canned Tomatoes 400g</span>
+                    <span class="risk-tag">Eggs (dozen)</span>
+                </div>
+                <button class="btn-outline" style="margin-top:12px;"><i class="fas fa-download"></i> Export Risk List</button>
+            </div>
+        </section>
+
+        <!-- ===== PAGE: SETTINGS ===== -->
+        <section id="page-settings" class="page">
+            <header class="page-header">
+                <h1>System Settings</h1>
+                <p>Configure your analytics system rules and preferences.</p>
+            </header>
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h3>Application</h3>
+                    <p class="chart-sub">Modify the visual and interactive behavior of the dashboard.</p>
+                    <ul class="settings-nav">
+                        <li class="active">General</li>
+                        <li>Notifications</li>
+                        <li>Security</li>
+                        <li>Data Management</li>
+                    </ul>
+                </div>
+                <div class="settings-card">
+                    <h3>Inventory Calculation Rules</h3>
+                    <p class="chart-sub">Define how the system identifies stock risks and suggests reorders.</p>
+                    <div class="setting-group">
+                        <label>Default Reorder Level</label>
+                        <div class="setting-row">
+                            <input type="number" id="reorderLevel" value="20" />
+                            <select id="reorderMode">
+                                <option value="balanced">1.5x (Balanced)</option>
+                                <option value="aggressive">2x (Aggressive)</option>
+                                <option value="conservative">1x (Conservative)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="autoReorder" checked />
+                            <span class="toggle-slider"></span>
+                            Automatic Reorder Suggestions
+                        </label>
+                        <p class="setting-hint">Automatically calculate quantities based on lead times.</p>
+                    </div>
+                    <div class="setting-group">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="lowStockAlerts" checked />
+                            <span class="toggle-slider"></span>
+                            Low Stock Email Alerts
+                        </label>
+                        <p class="setting-hint">Notify the warehouse manager via email on critical stock.</p>
+                    </div>
+                </div>
+                <div class="settings-card danger">
+                    <h3>Danger Zone</h3>
+                    <p class="chart-sub">Irreversible actions for system data maintenance.</p>
+                    <button class="btn-danger" id="resetDataBtn"><i class="fas fa-trash"></i> Reset Application Data</button>
+                    <p class="setting-hint">Restore all data, sales, and inventory to initial stock data.</p>
+                </div>
+            </div>
+            <div class="settings-footer">
+                <span class="version">SuperStock Strategic Analytics v1.0.4</span>
+                <span class="version-sub">Developed by Maada. This is a demonstration environment with no persistent database storage. All changes are stored in the local session state.</span>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Product</h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- dynamic -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
